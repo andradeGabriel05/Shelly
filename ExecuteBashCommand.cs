@@ -1,6 +1,7 @@
 using System.Diagnostics;
 
-class ExecuteBashCommand {
+namespace ExecuteBashCommand;
+class Commands {
     public static string ExecuteCommand(string command)
     {
         
@@ -25,8 +26,12 @@ class ExecuteBashCommand {
 
     }
 
-    public static string VerifyTime() {
-        return ExecuteCommand("date '+%X'");
+    // public static string VerifyTime() {
+    //     return ExecuteCommand("date '+%X'");
+    // }
+
+    public static string VerifyUserThemes() {
+        return ExecuteCommand("lookandfeeltool -l");
     }
 
 }

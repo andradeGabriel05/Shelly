@@ -1,19 +1,24 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Diagnostics;
+﻿using Avalonia;
+using System;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.ReactiveUI; // Required for UsePlatformDetect
+using Avalonia.Controls;
+
+namespace Shelly;
 
 class Program
 {
-    static void Main(string[] args)
-    {
-        var verifyUserThemes = ExecuteBashCommand.ExecuteCommand("lookandfeeltool -l");
-        Console.WriteLine(verifyUserThemes);
+    // Initialization code. Don't use any Avalonia, third-party APIs or any
+    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
+    // yet and stuff might break.
+    [STAThread]
+    public static void Main(string[] args) => BuildAvaloniaApp()
+        .StartWithClassicDesktopLifetime(args);
 
-        var time = ExecuteBashCommand.VerifyTime();
-        var selectedTime = SelectTime.InputTimeToSwitch(time);
-
-        if (selectedTime)
-        {
-            ExecuteBashCommand.ExecuteCommand("lookandfeeltool -a \"org.kde.breezedark.desktop\"");
-        }
-    }
+    // Avalonia configuration, don't remove; also used by visual designer.
+    public static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont()
+            .LogToTrace();
 }

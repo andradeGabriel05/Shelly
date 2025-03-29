@@ -1,24 +1,42 @@
-class SelectTime {
-    public static bool InputTimeToSwitch(string actualTime) {
-        Console.WriteLine("Select a time: ");
-        var selectHour = Console.ReadLine();
+using System.Diagnostics;
+using System.Threading;
+using ExecuteBashCommand;
+using System.IO;
+using System;
+class SelectTime
+{
 
-        Console.WriteLine("Select minutes: ");
-        var selectMinutes = Console.ReadLine();
+    public static void TextFileSelectedTime(string hour, string minute, string period)
+    {
+        var selectedTime = hour + ":" + minute;
 
-        if (string.IsNullOrEmpty(selectHour) || string.IsNullOrEmpty(selectMinutes)) {
-            Console.WriteLine("Invalid input. Please enter a valid time.");
-            return false;
+        string path = "/tmp/Shelly-Selected-Time.txt";
+
+        if (!File.Exists(path))
+        {
+            using (StreamWriter sw = File.CreateText(path))
+            {
+                sw.WriteLine("selected-time = " + selectedTime);
+            }
+            System.Console.WriteLine(DateHourToLog() + " File created");
+            return;
         }
 
-        var selectedTime = selectHour + ":" + selectMinutes;
-        if(actualTime.Contains(selectedTime)) {
-            Console.WriteLine("Time is valid.");
-            return true;
-        } else {
-            Console.WriteLine("Time is invalid.");
-            return false;
+        using (StreamWriter sw = new StreamWriter(path, false))
+        {
+            sw.WriteLine("selected-time = " + selectedTime);
+            sw.WriteLine("selected-period = " + period);
         }
+        System.Console.WriteLine(DateHourToLog() + " File updated");
     }
-    
+
+    public static string VerifyActualTime() {
+        return ExecuteBashCommand.Commands.ExecuteCommand("date +'%H:%M'").Trim();
+    }
+
+    public static string DateHourToLog()
+    {
+        return DateTime.Now.ToString("[ yyyy-MM-dd HH:mm:ss ]");
+    }
+
 }
