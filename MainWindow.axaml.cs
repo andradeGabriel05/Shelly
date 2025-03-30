@@ -6,6 +6,7 @@ using System.IO;
 using Shelly.UI;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 namespace Shelly;
 
 public partial class MainWindow : Window
@@ -17,19 +18,29 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         Console.WriteLine(SelectTime.DateHourToLog() + " Application started");
+
+        List<string> themes = ExecuteBashCommand.Commands.VerifyUserThemes();
+
+        foreach (var theme in themes)
+        {
+            ThemeComboBox.Items.Add(new ComboBoxItem { Content = theme });
+        }
+
         this.Opened += OnOpened;
-
-
     }
 
     private async void OnOpened(object? sender, EventArgs e)
     {
         await Task.Run(() => WriteToFilePeriodically(_cts.Token));
-        await Task.Run(() => VerifyTimeForChangeTheme(VerifyFile.ReturnTime()));
     }
 
     private async Task WriteToFilePeriodically(CancellationToken token)
     {
+        if (SelectTime.VerifyActualTime() == VerifyFile.ReturnTime())
+        {
+            System.Console.WriteLine(SelectTime.DateHourToLog() + " Waiting 1 minute to check file");
+            await Task.Delay(60000, _cts.Token);
+        }
         bool fileExist;
         System.Console.WriteLine(SelectTime.DateHourToLog() + " Checking file");
 
@@ -43,7 +54,8 @@ public partial class MainWindow : Window
 
                 if (fileExist)
                 {
-                    Console.WriteLine(SelectTime.DateHourToLog() + " File exists [main]");
+                    Console.WriteLine(SelectTime.DateHourToLog() + " File exists");
+                    await Task.Run(() => VerifyTimeForChangeTheme(VerifyFile.ReturnTime()));
                     break;
                 }
 
@@ -70,7 +82,6 @@ public partial class MainWindow : Window
     {
         //horario atual
         string actualTime;
-        var counter = 0;
 
         Console.WriteLine(SelectTime.DateHourToLog() + " Selected time: " + time);
 
@@ -87,12 +98,14 @@ public partial class MainWindow : Window
 
             try
             {
+                // await Task.Delay(30000, _cts.Token);
                 await Task.Delay(1000, _cts.Token);
                 System.Console.WriteLine(SelectTime.DateHourToLog() + " ...");
-                if (time.Contains(actualTime) && counter == 0)
+                if (time.Contains(actualTime))
                 {
                     Console.WriteLine(SelectTime.DateHourToLog() + " Time to change theme");
-                    counter++;
+                    ExecuteBashCommand.Commands.SetTheme(VerifyFile.ReturnTheme());
+                    ExecuteBashCommand.Commands.SetTheme(VerifyFile.ReturnTheme());
                 }
             }
             catch (TaskCanceledException)
@@ -107,15 +120,15 @@ public partial class MainWindow : Window
             }
         } while (time != actualTime);
         System.Console.WriteLine(SelectTime.DateHourToLog() + " Theme changed");
+        WriteToFilePeriodically(_cts.Token);
     }
 
     private void SaveButton_Click(object? sender, RoutedEventArgs e)
     {
         var selectedHour = (HourComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
         var selectedMinute = (MinuteComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
-        var selectedPeriod = (PeriodComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
-
-        SelectTime.TextFileSelectedTime(selectedHour, selectedMinute, selectedPeriod);
+        var selectedTheme = (ThemeComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
+        SelectTime.TextFileSelectedTime(selectedHour, selectedMinute, selectedTheme);
 
     }
 }

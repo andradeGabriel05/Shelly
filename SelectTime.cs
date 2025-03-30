@@ -6,7 +6,7 @@ using System;
 class SelectTime
 {
 
-    public static void TextFileSelectedTime(string hour, string minute, string period)
+    public static void TextFileSelectedTime(string hour, string minute, string theme)
     {
         var selectedTime = hour + ":" + minute;
 
@@ -17,6 +17,7 @@ class SelectTime
             using (StreamWriter sw = File.CreateText(path))
             {
                 sw.WriteLine("selected-time = " + selectedTime);
+                sw.WriteLine("selected-theme = " + theme);
             }
             System.Console.WriteLine(DateHourToLog() + " File created");
             return;
@@ -25,7 +26,7 @@ class SelectTime
         using (StreamWriter sw = new StreamWriter(path, false))
         {
             sw.WriteLine("selected-time = " + selectedTime);
-            sw.WriteLine("selected-period = " + period);
+            sw.WriteLine("selected-theme = " + theme);
         }
         System.Console.WriteLine(DateHourToLog() + " File updated");
     }
