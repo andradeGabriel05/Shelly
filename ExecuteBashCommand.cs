@@ -27,25 +27,17 @@ class Commands {
 
     }
 
-    // public static string VerifyTime() {
-    //     return ExecuteCommand("date '+%X'");
-    // }
-
     public static List<string> VerifyUserThemes() {
-        var themes = ExecuteCommand("lookandfeeltool -l | sed -e 's/^org\\.kde\\.//' -e 's/\\.desktop$//' -e 's/^\\(.)\\)/\\U\\1/'").Split("\n");
-        System.Console.WriteLine(themes);
+        var themes = ExecuteCommand(@"lookandfeeltool -l | sed -e 's/^org\.kde\.//' -e 's/\.desktop$//' -e 's/^\(.\)/\U\1/'").Split("\n");
         List<string> themesList = [.. themes];
-
-        System.Console.WriteLine(themesList);
 
         return themesList;
     }
 
     public static void SetTheme(string theme) {
-        System.Console.WriteLine(SelectTime.DateHourToLog() + "Setting theme to " + theme);
+        System.Console.WriteLine(SelectTime.DateHourToLog() + "Setting theme to " + theme.ToLower());
         // verify name of theme
-        var selectedTheme = ExecuteCommand("lookandfeeltool -l | grep " + theme + ".desktop");
-        System.Console.WriteLine(selectedTheme);
+        var selectedTheme = ExecuteCommand("lookandfeeltool -l | grep " + theme.ToLower() + ".desktop");
         ExecuteCommand("lookandfeeltool -a " + selectedTheme);
     }
 

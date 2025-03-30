@@ -37,7 +37,6 @@ namespace Shelly.UI
                 if (line.Contains("selected-theme = "))
                 {
                     var selectedTheme = line.Split(" = ")[1];
-                    System.Console.WriteLine(selectedTheme);
                     return selectedTheme;
                 }
             }

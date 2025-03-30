@@ -7,11 +7,13 @@ using Shelly.UI;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 namespace Shelly;
 
 public partial class MainWindow : Window
 {
     private CancellationTokenSource _cts = new();
+    bool fileExist = VerifyFile.VerifyFileExists("/tmp/Shelly-Selected-Time.txt");
 
     public MainWindow()
     {
@@ -26,6 +28,22 @@ public partial class MainWindow : Window
             ThemeComboBox.Items.Add(new ComboBoxItem { Content = theme });
         }
 
+        ThemeComboBox.SelectedIndex = ThemeComboBox.Items.IndexOf(ThemeComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(x => x.Content.ToString() == themes[0]));
+
+
+        if (fileExist)
+        {
+            var selectedTime = VerifyFile.ReturnTime();
+            var selectedTheme = VerifyFile.ReturnTheme();
+            var selectedTimeSplit = selectedTime.Split(":");
+            var selectedHour = selectedTimeSplit[0];
+            var selectedMinute = selectedTimeSplit[1];
+
+            HourComboBox.SelectedIndex = HourComboBox.Items.IndexOf(HourComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(x => x.Content.ToString() == selectedHour));
+            MinuteComboBox.SelectedIndex = MinuteComboBox.Items.IndexOf(MinuteComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(x => x.Content.ToString() == selectedMinute));
+            ThemeComboBox.SelectedIndex = ThemeComboBox.Items.IndexOf(ThemeComboBox.Items.Cast<ComboBoxItem>().FirstOrDefault(x => x.Content.ToString() == selectedTheme));
+        }
+
         this.Opened += OnOpened;
     }
 
@@ -36,12 +54,12 @@ public partial class MainWindow : Window
 
     private async Task WriteToFilePeriodically(CancellationToken token)
     {
-        if (SelectTime.VerifyActualTime() == VerifyFile.ReturnTime())
+        if (fileExist && SelectTime.VerifyActualTime() == VerifyFile.ReturnTime())
         {
             System.Console.WriteLine(SelectTime.DateHourToLog() + " Waiting 1 minute to check file");
             await Task.Delay(60000, _cts.Token);
         }
-        bool fileExist;
+
         System.Console.WriteLine(SelectTime.DateHourToLog() + " Checking file");
 
         do
