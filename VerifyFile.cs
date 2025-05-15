@@ -18,17 +18,36 @@ namespace Shelly.UI
 
         public static string ReturnTime()
         {
-            using StreamReader sr = File.OpenText("/tmp/Shelly-Selected-Time.txt");
-            string s = sr.ReadLine();
-
-            if (s.Contains("selected-time = "))
+            foreach (var line in File.ReadLines("/tmp/Shelly-Selected-Time.txt"))
             {
-                var selectedTime = s.Split(" = ")[1];
-                return selectedTime;
+                if (line.Contains("selected-time = "))
+                {
+                    var selectedTime = line.Split(" = ")[1];
+                    return selectedTime;
+                }
+
             }
+
             return null;
 
         }
+
+        public static string ReturnSecondTime()
+        {
+            foreach (var line in File.ReadLines("/tmp/Shelly-Selected-Time.txt"))
+            {
+                if (line.Contains("selected-second-time = "))
+                {
+                    var secondTimeSelected = line.Split(" = ")[1];
+                    return secondTimeSelected;
+                }
+
+            }
+
+            return null;
+
+        }
+
 
         public static string ReturnTheme()
         {
@@ -38,6 +57,20 @@ namespace Shelly.UI
                 {
                     var selectedTheme = line.Split(" = ")[1];
                     return selectedTheme;
+                }
+            }
+            return null;
+
+        }
+
+        public static string ReturnSecondTheme()
+        {
+            foreach (var line in File.ReadLines("/tmp/Shelly-Selected-Time.txt"))
+            {
+                if (line.Contains("selected-second-theme = "))
+                {
+                    var secondThemeSelected = line.Split(" = ")[1];
+                    return secondThemeSelected;
                 }
             }
             return null;

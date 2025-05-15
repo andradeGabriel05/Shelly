@@ -6,9 +6,11 @@ using System;
 class SelectTime
 {
 
-    public static void TextFileSelectedTime(string hour, string minute, string theme)
+// funcao para salvar arquivos com tempo escolhido
+    public static void TextFileSelectedTime(string hour, string secondHour, string minute, string secondMinute, string theme, string secondTheme)
     {
         var selectedTime = hour + ":" + minute;
+        var selectedSecondTime = secondHour + ":" + secondMinute;
 
         string path = "/tmp/Shelly-Selected-Time.txt";
 
@@ -18,6 +20,10 @@ class SelectTime
             {
                 sw.WriteLine("selected-time = " + selectedTime);
                 sw.WriteLine("selected-theme = " + theme);
+                if(selectedSecondTime != null) {
+                    sw.WriteLine("selected-second-time = " + selectedSecondTime);
+                    sw.WriteLine("selected-second-theme = " + secondTheme);
+                }
             }
             System.Console.WriteLine(DateHourToLog() + " File created");
             return;
@@ -27,10 +33,14 @@ class SelectTime
         {
             sw.WriteLine("selected-time = " + selectedTime);
             sw.WriteLine("selected-theme = " + theme);
+            if(selectedSecondTime != "") {
+                    sw.WriteLine("selected-second-time = " + selectedSecondTime);
+                    sw.WriteLine("selected-second-theme = " + secondTheme);
+                }
         }
         System.Console.WriteLine(DateHourToLog() + " File updated");
     }
-
+    
     public static string VerifyActualTime() {
         return ExecuteBashCommand.Commands.ExecuteCommand("date +'%H:%M'").Trim();
     }
